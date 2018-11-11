@@ -27,7 +27,7 @@ Install the dependencies first for running the code.
 <img src="https://raw.githubusercontent.com/abhiksark/pictures_cluster_classify/master/prediciton.jpg" width="60%">
 
 
-### Development
+## Development
 
 Want to contribute? Great!
 
@@ -39,6 +39,3 @@ Want to contribute? Great!
 	<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" />
 </a>
 
-
-
-**Free Software, Hell Yeah!**
