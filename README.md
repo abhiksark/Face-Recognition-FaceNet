@@ -1,5 +1,3 @@
-# Face Recognition for Group Photos
-
 
 ## Inspiration
 * [OpenFace](https://github.com/cmusatyalab/openface)
@@ -26,6 +24,26 @@ Install the dependencies first for running the code.
 ## Result
 <img src="https://raw.githubusercontent.com/abhiksark/pictures_cluster_classify/master/prediciton.jpg" width="60%">
 
+### Directory Strcuture
+
+```bash
+├── 20170511-185253
+│   ├── 20170511-185253.pb
+│   ├── model-20170511-185253.ckpt-80000.data-00000-of-00001
+│   ├── model-20170511-185253.ckpt-80000.index
+│   └── model-20170511-185253.meta
+├── cls
+│   └── my_classifier.pkl
+├── data
+│   ├── det1.npy
+│   ├── det2.npy
+│   └── det3.npy
+├── faces
+│   └── Aligned and Cropped face Photos
+└── raw_faces
+│   └── Raw Photos 
+Python files 
+````
 
 ## Development
 
@@ -38,4 +56,3 @@ Want to contribute? Great!
 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">
 	<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" />
 </a>
-
