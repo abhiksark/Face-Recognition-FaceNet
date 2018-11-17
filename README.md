@@ -48,6 +48,7 @@ Python files
 ## Development
 
 Want to contribute? Great!
+Contact me in LinkedIn!
 
 ## License
 
