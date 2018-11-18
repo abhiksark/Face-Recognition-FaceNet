@@ -33,7 +33,7 @@ Install the dependencies first for running the code.
 │   ├── model-20170511-185253.ckpt-80000.index
 │   └── model-20170511-185253.meta
 ├── cls
-│   └── my_classifier.pkl
+│   └── face_classifier.pkl
 ├── data
 │   ├── det1.npy
 │   ├── det2.npy
