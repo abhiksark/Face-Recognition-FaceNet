@@ -100,13 +100,9 @@ with tf.Graph().as_default():
         video_capture = cv2.VideoCapture(0)
         c = 0
 
-        # #video writer
-        # fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-        # out = cv2.VideoWriter('3F_0726.avi', fourcc, fps=30, frameSize=(640,480))
-
-        print('Start Recognition!')
         ret = True
         frame =  cv2.imread('./pred.jpg')
+
         if frame.ndim == 2:
             frame = facenet.to_rgb(frame)
         frame = frame[:, :, 0:3]
@@ -158,7 +154,7 @@ with tf.Graph().as_default():
                                 cv2.putText(frame, result_names, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
                                             1, (255, 255, 0), thickness=2, lineType=8)
                                 
-                    cv2.imwrite('./'+str("e")+".jpg", frame)
+                    cv2.imwrite('./'+str("_pred")+".jpg", frame)
 
         else:
                     print('Unable to align')

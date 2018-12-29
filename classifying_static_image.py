@@ -30,7 +30,6 @@ from sklearn.externals import joblib
 import re
 from tensorflow.python.platform import gfile
 
-HumanNames = ['modi','obama']
 
 def get_model_filenames(model_dir):
     files = os.listdir(model_dir)
