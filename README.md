@@ -68,7 +68,8 @@ Install the dependencies first for running the code.
 ├── facenet.py
 ├── classifying_static_image.py
 ├── clustering_faces.py
-├── combine_cluster_folder.py````
+├── combine_cluster_folder.py
+```
 
 ## Development
 
