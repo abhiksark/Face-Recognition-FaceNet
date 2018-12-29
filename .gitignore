@@ -103,6 +103,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+*.jpeg 
+*.jpg
 
 20170511-185253.pb
 model-20170511-185253.ckpt-80000.data-00000-of-00001
