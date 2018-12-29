@@ -30,20 +30,32 @@ Install the dependencies first for running the code.
 ```bash
 ├── 20170511-185253
 │   ├── 20170511-185253.pb
+│   ├── add your model file here 
 │   ├── model-20170511-185253.ckpt-80000.data-00000-of-00001
 │   ├── model-20170511-185253.ckpt-80000.index
 │   └── model-20170511-185253.meta
 ├── cls
-│   └── face_classifier.pkl
+│   └── my_classifier.pkl
 ├── data
 │   ├── det1.npy
 │   ├── det2.npy
 │   └── det3.npy
 ├── faces
-│   └── Aligned and Cropped face Photos
-└── raw_faces
-│   └── Raw Photos 
-Python files 
+│   └── aligned photos atomatically generated from raw_photos
+├── labelled_faces
+│   └── folder cointaining name of that person
+├── raw_faces
+│   └── Add your group photos here
+├── raw_faces_to_aligned_faces.py
+├── making_classifier.py
+├── ModelManagement.py
+├── labeling_faces.py
+├── detect_face.py
+├── facenet.py
+├── classifying_static_image.py
+├── clustering_faces.py
+├── combine_cluster_folder.py
+
 ````
 
 ## Development
