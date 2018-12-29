@@ -31,7 +31,7 @@ Install the dependencies first for running the code.
 <img src="https://raw.githubusercontent.com/abhiksark/pictures_cluster_classify/master/gifs/making%20classifier.gif" width="60%">
 
 
-* Finally, we load our own 'my_classifier.pkl' obtained above and then open the sensor and start recognition.
+* Finally, we load our own 'my_classifier.pkl' obtained above and then open the sensor and start recognition by running labeling_faces.py
 <img src="https://raw.githubusercontent.com/abhiksark/pictures_cluster_classify/master/gifs/result.gif" width="60%">
 
 
