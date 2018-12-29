@@ -8,9 +8,11 @@ import argparse
 import facenet
 import detect_face
 import os
+import pandas as pd
 import sys
 import math
 import pickle
+from sklearn.cluster import KMeans
 from sklearn.svm import SVC
 
 
@@ -48,10 +50,6 @@ with tf.Graph().as_default():
             feed_dict = {images_placeholder: images, phase_train_placeholder: False}
             emb_array[start_index:end_index, :] = sess.run(embeddings, feed_dict=feed_dict)
 
-        classifier_filename = './cls/my_classifier.pkl'
-        classifier_filename_exp = os.path.expanduser(classifier_filename)
-
-        #print(emb_array, paths)
 names =[]
 for i in range(1,129):
     names.append("col"+str(i))
@@ -66,10 +64,11 @@ kmeans = KMeans(n_clusters = 10, init = 'k-means++', random_state = 42)
 y_kmeans = kmeans.fit_predict(X)
 
 for i in range(len(paths)):
+    print(str(y_kmeans[i]) +"/" + str(y[i].split("/")[-1]))
     try:
-        os.rename(y[i],"./faces/!!/" + str(y_kmeans[i]) +"/" + y[i][11:])
+        os.rename(y[i],"./faces/group_photos/" + str(y_kmeans[i]) +"/" + str(y[i].split("/")[-1]))
     except:
-        os.mkdir("./faces/!!/"+ str(y_kmeans[i]))
+        os.mkdir("./faces/group_photos/"+ str(y_kmeans[i]))
         print()
-        os.rename(y[i],"./faces/!!/" + str(y_kmeans[i]) +"/" + y[i][11:])
+        os.rename(y[i],"./faces/group_photos/" + str(y_kmeans[i]) +"/" + str(y[i].split("/")[-1]))
 
