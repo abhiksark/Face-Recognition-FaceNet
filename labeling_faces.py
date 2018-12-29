@@ -81,7 +81,7 @@ with tf.Graph().as_default():
         margin = 44
         image_size = 182
 
-        HumanNames = os.listdir("./faces")    #train human name
+        HumanNames = os.listdir("./labelled_faces")    #train human name
         HumanNames.sort()
         print('Loading feature extraction model')
         modeldir = './20170511-185253/20170511-185253.pb'
@@ -101,7 +101,7 @@ with tf.Graph().as_default():
         c = 0
 
         ret = True
-        frame =  cv2.imread('./pred.jpg')
+        frame =  cv2.imread('./test.jpg')
 
         if frame.ndim == 2:
             frame = facenet.to_rgb(frame)
@@ -154,7 +154,7 @@ with tf.Graph().as_default():
                                 cv2.putText(frame, result_names, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
                                             1, (255, 255, 0), thickness=2, lineType=8)
                                 
-                    cv2.imwrite('./'+str("_pred")+".jpg", frame)
+                    cv2.imwrite('./'+str("prediction")+".jpg", frame)
 
         else:
                     print('Unable to align')
