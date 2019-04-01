@@ -2,8 +2,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf
+
+from os.path import join as pjoin
 from scipy import misc
+from sklearn.svm import SVC
+from sklearn.externals import joblib
+from tensorflow.python.platform import gfile
+
+import tensorflow as tf
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,16 +17,14 @@ import argparse
 import facenet
 import detect_face
 import os
-from os.path import join as pjoin
 import sys
 import time
 import copy
 import math
 import pickle
-from sklearn.svm import SVC
-from sklearn.externals import joblib
 import re
-from tensorflow.python.platform import gfile
+
+
 
 def get_model_filenames(model_dir):
     files = os.listdir(model_dir)
@@ -67,13 +71,15 @@ with tf.Graph().as_default():
     sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
     with sess.as_default():
         pnet, rnet, onet = detect_face.create_mtcnn(sess, './data')
+        
         minsize = 20  # minimum size of face
         threshold = [0.6, 0.7, 0.7]  # three steps's threshold
-        #factor =   # scale factor
         margin = 44
         frame_interval = 3
         batch_size = 10
         image_size = 182
+        
+        
         input_image_size = 160
         minsize = 100  # minimum size of face
         threshold = [0.7, 0.7, 0.7]  # three steps's threshold
@@ -97,7 +103,6 @@ with tf.Graph().as_default():
         with open(classifier_filename_exp, 'rb') as infile:
             (model, class_names) = pickle.load(infile)
             print('load classifier file-> %s' % classifier_filename_exp)
-        video_capture = cv2.VideoCapture(0)
         c = 0
 
         ret = True

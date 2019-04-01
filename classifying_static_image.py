@@ -10,8 +10,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf
 from scipy import misc
+from os.path import join as pjoin
+from sklearn.svm import SVC
+from sklearn.externals import joblib
+from tensorflow.python.platform import gfile
+
+
+import tensorflow as tf
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,16 +25,12 @@ import argparse
 import facenet
 import detect_face
 import os
-from os.path import join as pjoin
 import sys
 import time
 import copy
 import math
 import pickle
-from sklearn.svm import SVC
-from sklearn.externals import joblib
 import re
-from tensorflow.python.platform import gfile
 
 
 def get_model_filenames(model_dir):
@@ -101,6 +103,9 @@ with tf.Graph().as_default():
             print('load classifier file-> %s' % classifier_filename_exp)
         video_capture = cv2.VideoCapture(0)
         c = 0
+
+        HumanNames = os.listdir("./labelled_faces")    #train human name
+        HumanNames.sort()
 
         # #video writer
         # fourcc = cv2.VideoWriter_fourcc(*'DIVX')

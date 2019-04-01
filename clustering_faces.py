@@ -2,6 +2,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from sklearn.cluster import KMeans
+from sklearn.svm import SVC
+
 import tensorflow as tf
 import numpy as np
 import argparse
@@ -12,21 +15,18 @@ import pandas as pd
 import sys
 import math
 import pickle
-from sklearn.cluster import KMeans
-from sklearn.svm import SVC
 
 
 with tf.Graph().as_default():
-
     with tf.Session() as sess:
-
         datadir = './faces'
         dataset = facenet.get_dataset(datadir)
         paths, labels = facenet.get_image_paths_and_labels(dataset)
+        
         print('Number of classes: %d' % len(dataset))
         print('Number of images: %d' % len(paths))
-
         print('Loading feature extraction model')
+
         modeldir = './20170511-185253/20170511-185253.pb'
         facenet.load_model(modeldir)
 
@@ -34,11 +34,12 @@ with tf.Graph().as_default():
         embeddings = tf.get_default_graph().get_tensor_by_name("embeddings:0")
         phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
         embedding_size = embeddings.get_shape()[1]
-
+        
         # Run forward pass to calculate embeddings
         print('Calculating features for images')
         batch_size = 25
         image_size = 160
+
         nrof_images = len(paths)
         nrof_batches_per_epoch = int(math.ceil(1.0 * nrof_images / batch_size))
         emb_array = np.zeros((nrof_images, embedding_size))
@@ -58,8 +59,10 @@ value=emb_array
 key = paths
 d = dict( zip( key, value))
 df = pd.DataFrame.from_dict(d, orient='index',columns=names)
+
 X = df.iloc[:, :].values
 y = df.index.values
+
 kmeans = KMeans(n_clusters = 10, init = 'k-means++', random_state = 42)
 y_kmeans = kmeans.fit_predict(X)
 

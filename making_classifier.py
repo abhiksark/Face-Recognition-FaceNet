@@ -11,16 +11,16 @@ import os
 import sys
 import math
 import pickle
+
 from sklearn.svm import SVC
 
 
 with tf.Graph().as_default():
-
     with tf.Session() as sess:
-
         datadir = './labelled_faces'
         dataset = facenet.get_dataset(datadir)
         paths, labels = facenet.get_image_paths_and_labels(dataset)
+        
         print('Number of classes: %d' % len(dataset))
         print('Number of images: %d' % len(paths))
 
