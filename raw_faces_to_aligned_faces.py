@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 from scipy import misc
+from time import sleep
+
 import sys
 import os
 import argparse
@@ -11,15 +13,15 @@ import numpy as np
 import facenet
 import detect_face
 import random
-from time import sleep
 
-output_dir_path = './faces'
-output_dir = os.path.expanduser(output_dir_path)
+OUTPUT_DIR = './faces'
+DATA_DIR = './raw_faces'
+
+output_dir = os.path.expanduser(OUTPUT_DIR)
 if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    os.makedirs(output_dir)
 
-datadir = './raw_faces'
-dataset = facenet.get_dataset(datadir)
+dataset = facenet.get_dataset(DATA_DIR)
 
 print('Creating networks and loading parameters')
 with tf.Graph().as_default():
