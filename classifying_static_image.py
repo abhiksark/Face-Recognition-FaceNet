@@ -16,7 +16,6 @@ from sklearn.svm import SVC
 from sklearn.externals import joblib
 from tensorflow.python.platform import gfile
 
-
 import tensorflow as tf
 import cv2
 import matplotlib.pyplot as plt

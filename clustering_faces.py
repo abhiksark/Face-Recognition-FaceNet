@@ -16,11 +16,11 @@ import sys
 import math
 import pickle
 
+DATA_DIR = './faces'
 
 with tf.Graph().as_default():
     with tf.Session() as sess:
-        datadir = './faces'
-        dataset = facenet.get_dataset(datadir)
+        dataset = facenet.get_dataset(DATA_DIR)
         paths, labels = facenet.get_image_paths_and_labels(dataset)
         
         print('Number of classes: %d' % len(dataset))
@@ -55,7 +55,7 @@ names =[]
 for i in range(1,129):
     names.append("col"+str(i))
 
-value=emb_array
+value = emb_array
 key = paths
 d = dict( zip( key, value))
 df = pd.DataFrame.from_dict(d, orient='index',columns=names)
@@ -74,4 +74,3 @@ for i in range(len(paths)):
         os.mkdir("./faces/group_photos/"+ str(y_kmeans[i]))
         print()
         os.rename(y[i],"./faces/group_photos/" + str(y_kmeans[i]) +"/" + str(y[i].split("/")[-1]))
-

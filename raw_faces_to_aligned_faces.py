@@ -74,7 +74,6 @@ with open(bounding_boxes_filename, "w") as text_file:
                     bounding_boxes, _ = detect_face.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
                     nrof_faces = bounding_boxes.shape[0]
                     print('detected_face: %d' % nrof_faces)
-                    print(bounding_boxes)
                     print("")
                     print(_)
                     print("")
