@@ -23,16 +23,16 @@ https://github.com/kpzhang93/MTCNN_face_detection_alignment
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from six import string_types, iteritems
+from __future__ import absolute_import, division, print_function
 
-import numpy as np
-import tensorflow as tf
+import os
+
 #from math import floor
 import cv2
-import os
+import numpy as np
+import tensorflow as tf
+from six import iteritems, string_types
+
 
 def layer(op):
     '''Decorator for composable network layers.'''
@@ -775,4 +775,3 @@ def imresample(img, sz):
 #             for a3 in range(0,3):
 #                 im_data[a1,a2,a3] = img[int(floor(a1*dy)),int(floor(a2*dx)),a3]
 #     return im_data
-

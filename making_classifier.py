@@ -1,26 +1,24 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
-import tensorflow as tf
-import numpy as np
 import argparse
-import facenet
-import detect_face
-import os
-import sys
 import math
+import os
 import pickle
+import sys
 
+import numpy as np
+import tensorflow as tf
 from sklearn.svm import SVC
 
+import detect_face
+import facenet
 
 with tf.Graph().as_default():
     with tf.Session() as sess:
         datadir = './labelled_faces'
         dataset = facenet.get_dataset(datadir)
         paths, labels = facenet.get_image_paths_and_labels(dataset)
-        
+
         print('Number of classes: %d' % len(dataset))
         print('Number of images: %d' % len(paths))
 
@@ -45,8 +43,10 @@ with tf.Graph().as_default():
             end_index = min((i + 1) * batch_size, nrof_images)
             paths_batch = paths[start_index:end_index]
             images = facenet.load_data(paths_batch, False, False, image_size)
-            feed_dict = {images_placeholder: images, phase_train_placeholder: False}
-            emb_array[start_index:end_index, :] = sess.run(embeddings, feed_dict=feed_dict)
+            feed_dict = {images_placeholder: images,
+                         phase_train_placeholder: False}
+            emb_array[start_index:end_index, :] = sess.run(
+                embeddings, feed_dict=feed_dict)
 
         classifier_filename = './cls/my_classifier.pkl'
         classifier_filename_exp = os.path.expanduser(classifier_filename)

@@ -1,18 +1,17 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
-from scipy import misc
+import argparse
+import os
+import random
+import sys
 from time import sleep
 
-import sys
-import os
-import argparse
-import tensorflow as tf
 import numpy as np
-import facenet
+import tensorflow as tf
+from scipy import misc
+
 import detect_face
-import random
+import facenet
 
 OUTPUT_DIR = './faces'
 DATA_DIR = './raw_faces'
@@ -32,13 +31,14 @@ with tf.Graph().as_default():
 
 minsize = 40  # minimum size of face
 threshold = [0.6, 0.7, 0.7]  # three steps's threshold
-factor = 0.709 # scale factor 0.709 
+factor = 0.709  # scale factor 0.709
 margin = 44
 image_size = 182
 
 # Add a random key to the filename to allow alignment using multiple processes
 random_key = np.random.randint(0, high=99999)
-bounding_boxes_filename = os.path.join(output_dir, 'bounding_boxes_%05d.txt' % random_key)
+bounding_boxes_filename = os.path.join(
+    output_dir, 'bounding_boxes_%05d.txt' % random_key)
 print('Goodluck')
 
 with open(bounding_boxes_filename, "w") as text_file:
@@ -71,17 +71,18 @@ with open(bounding_boxes_filename, "w") as text_file:
                     img = img[:, :, 0:3]
                     print('after data dimension: ', img.ndim)
 
-                    bounding_boxes, _ = detect_face.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
+                    bounding_boxes, _ = detect_face.detect_face(
+                        img, minsize, pnet, rnet, onet, threshold, factor)
                     nrof_faces = bounding_boxes.shape[0]
                     print('detected_face: %d' % nrof_faces)
                     print("")
                     print(_)
                     print("")
                     print(bounding_boxes.shape)
-                    counter=nrof_faces
+                    counter = nrof_faces
                     det = bounding_boxes[:, 0:4]
                     img_size = np.asarray(img.shape)[0:2]
-                    
+
                     if nrof_faces == 1:
                         det = np.squeeze(det)
                         bb_temp = np.zeros(4, dtype=np.int32)
@@ -89,42 +90,50 @@ with open(bounding_boxes_filename, "w") as text_file:
                         bb_temp[1] = det[1]
                         bb_temp[2] = det[2]
                         bb_temp[3] = det[3]
-                        try: 
-                            cropped_temp = img[bb_temp[1]:bb_temp[3], bb_temp[0]:bb_temp[2], :]
-                            scaled_temp = misc.imresize(cropped_temp, (image_size, image_size), interp='bilinear')
+                        try:
+                            cropped_temp = img[bb_temp[1]                                               :bb_temp[3], bb_temp[0]:bb_temp[2], :]
+                            scaled_temp = misc.imresize(
+                                cropped_temp, (image_size, image_size), interp='bilinear')
                         except (ValueError) as e:
                             print("No Print")
                             continue
                         nrof_successfully_aligned += 1
                         misc.imsave(output_filename, scaled_temp)
-                        text_file.write('%s %d %d %d %d\n' % (output_filename, bb_temp[0], bb_temp[1], bb_temp[2], bb_temp[3]))
+                        text_file.write('%s %d %d %d %d\n' % (
+                            output_filename, bb_temp[0], bb_temp[1], bb_temp[2], bb_temp[3]))
 
                     if nrof_faces > 1:
-                            bounding_box_size = (det[:, 2] - det[:, 0]) * (det[:, 3] - det[:, 1])
-                            img_center = img_size / 2
-                            offsets = np.vstack([(det[:, 0] + det[:, 2]) / 2 - img_center[1],
-                                                 (det[:, 1] + det[:, 3]) / 2 - img_center[0]])
-                            offset_dist_squared = np.sum(np.power(offsets, 2.0), 0)
-                            index = np.argmax(bounding_box_size - offset_dist_squared * 2.0)  # some extra weight on the centering
-                            #det = det[index, :]
-                            det_morethanone = det
-                            for i in range(nrof_faces):
-                                det = det_morethanone[int(i),:]
-                                det = np.squeeze(det)
-                                bb_temp = np.zeros(4, dtype=np.int32)
-                                bb_temp[0] = det[0]
-                                bb_temp[1] = det[1]
-                                bb_temp[2] = det[2]
-                                bb_temp[3] = det[3]
-                                try: 
-                                    cropped_temp = img[bb_temp[1]:bb_temp[3], bb_temp[0]:bb_temp[2], :]
-                                    scaled_temp = misc.imresize(cropped_temp, (image_size, image_size), interp='bilinear')
-                                except (ValueError) as e:
-                                    print("No Print")
-                                    continue
-                                nrof_successfully_aligned += 1
-                                misc.imsave(output_filename[:-4]+str(i)+"1.jpg", scaled_temp)
-                                text_file.write('%s %d %d %d %d\n' % (output_filename, bb_temp[0], bb_temp[1], bb_temp[2], bb_temp[3]))
+                        bounding_box_size = (
+                            det[:, 2] - det[:, 0]) * (det[:, 3] - det[:, 1])
+                        img_center = img_size / 2
+                        offsets = np.vstack([(det[:, 0] + det[:, 2]) / 2 - img_center[1],
+                                             (det[:, 1] + det[:, 3]) / 2 - img_center[0]])
+                        offset_dist_squared = np.sum(np.power(offsets, 2.0), 0)
+                        # some extra weight on the centering
+                        index = np.argmax(
+                            bounding_box_size - offset_dist_squared * 2.0)
+                        #det = det[index, :]
+                        det_morethanone = det
+                        for i in range(nrof_faces):
+                            det = det_morethanone[int(i), :]
+                            det = np.squeeze(det)
+                            bb_temp = np.zeros(4, dtype=np.int32)
+                            bb_temp[0] = det[0]
+                            bb_temp[1] = det[1]
+                            bb_temp[2] = det[2]
+                            bb_temp[3] = det[3]
+                            try:
+                                cropped_temp = img[bb_temp[1]                                                   :bb_temp[3], bb_temp[0]:bb_temp[2], :]
+                                scaled_temp = misc.imresize(
+                                    cropped_temp, (image_size, image_size), interp='bilinear')
+                            except (ValueError) as e:
+                                print("No Print")
+                                continue
+                            nrof_successfully_aligned += 1
+                            misc.imsave(
+                                output_filename[:-4]+str(i)+"1.jpg", scaled_temp)
+                            text_file.write('%s %d %d %d %d\n' % (
+                                output_filename, bb_temp[0], bb_temp[1], bb_temp[2], bb_temp[3]))
                     else:
                         print('Unable to align "%s"' % image_path)
                         text_file.write('%s\n' % (output_filename))

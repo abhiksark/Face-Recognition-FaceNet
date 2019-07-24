@@ -24,23 +24,21 @@
 
 # pylint: disable=missing-docstring
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from tensorflow.python.framework import ops
-from scipy import interpolate
-from subprocess import Popen, PIPE
-from scipy import misc
-from sklearn.model_selection import KFold
-from tensorflow.python.training import training
-from tensorflow.python.platform import gfile
+from __future__ import absolute_import, division, print_function
 
 import os
-import tensorflow as tf
-import numpy as np
 import random
 import re
+from subprocess import PIPE, Popen
+
+import numpy as np
+import tensorflow as tf
+from scipy import interpolate, misc
+from sklearn.model_selection import KFold
+from tensorflow.python.framework import ops
+from tensorflow.python.platform import gfile
+from tensorflow.python.training import training
+
 
 def triplet_loss(anchor, positive, negative, alpha):
     """Calculate the triplet loss according to the FaceNet paper
