@@ -1,26 +1,26 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import tensorflow as tf
-from scipy import misc
-import cv2
-import matplotlib.pyplot as plt
-import numpy as np
+from __future__ import absolute_import, division, print_function
+import copy
 import argparse
-import facenet
-import detect_face
-import os
-from os.path import join as pjoin
-import sys
-import time
 import copy
 import math
+import os
 import pickle
-from sklearn.svm import SVC
-from sklearn.externals import joblib
 import re
+import sys
+import time
+from os.path import join as pjoin
+
+import pickle
+import re
+import sys
+import tensorflow as tf
+from scipy import misc
+from sklearn.externals import joblib
+from sklearn.svm import SVC
 from tensorflow.python.platform import gfile
+
+import detect_face
+from os.path import join as pjoin
 
 
 class Model():
