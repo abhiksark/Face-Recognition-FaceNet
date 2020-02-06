@@ -73,7 +73,8 @@ Install the dependencies first for running the code.
 
 ## Development
 
-Want to contribute? Great!
+Want to contribute? Great! 
+Contribute using PR
 Contact me in [LinkedIn!](http://linkedin.com/in/abhiksark/)
 
 ## License
