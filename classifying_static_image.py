@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 ###################################################################
-# File Name: classifying_static_iag.py
+# File Name: classifying_static_image.py
 # Author: Abhik Sarkar
 # mail: abhiksark@gmail.com
 # Created Time: Thu Oct  5 02:27:35 2017 IST

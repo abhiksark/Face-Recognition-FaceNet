@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function
-import copy
+
 import argparse
 import copy
 import math
@@ -10,9 +10,6 @@ import sys
 import time
 from os.path import join as pjoin
 
-import pickle
-import re
-import sys
 import tensorflow as tf
 from scipy import misc
 from sklearn.externals import joblib
@@ -20,7 +17,6 @@ from sklearn.svm import SVC
 from tensorflow.python.platform import gfile
 
 import detect_face
-from os.path import join as pjoin
 
 
 class Model():
