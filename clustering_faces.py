@@ -24,8 +24,8 @@ import tensorflow as tf
 from sklearn.cluster import KMeans
 from sklearn.svm import SVC
 
-import detect_face
-import facenet
+import face_recognition.detect_face as detect_face
+import face_recognition.facenet as facenet
 
 DATA_DIR = './faces'
 

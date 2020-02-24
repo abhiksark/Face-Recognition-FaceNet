@@ -21,8 +21,8 @@ import numpy as np
 import tensorflow as tf
 from scipy import misc
 
-import detect_face
-import facenet
+import face_recognition.detect_face as detect_face
+import face_recognition.facenet as facenet
 
 OUTPUT_DIR = './faces'
 DATA_DIR = './raw_faces'
@@ -102,7 +102,7 @@ with open(bounding_boxes_filename, "w") as text_file:
                         bb_temp[2] = det[2]
                         bb_temp[3] = det[3]
                         try:
-                            cropped_temp = img[bb_temp[1]                                               :bb_temp[3], bb_temp[0]:bb_temp[2], :]
+                            cropped_temp = img[bb_temp[1]:bb_temp[3], bb_temp[0]:bb_temp[2], :]
                             scaled_temp = misc.imresize(
                                 cropped_temp, (image_size, image_size), interp='bilinear')
                         except (ValueError) as e:
@@ -134,7 +134,7 @@ with open(bounding_boxes_filename, "w") as text_file:
                             bb_temp[2] = det[2]
                             bb_temp[3] = det[3]
                             try:
-                                cropped_temp = img[bb_temp[1]                                                   :bb_temp[3], bb_temp[0]:bb_temp[2], :]
+                                cropped_temp = img[bb_temp[1]:bb_temp[3], bb_temp[0]:bb_temp[2], :]
                                 scaled_temp = misc.imresize(
                                     cropped_temp, (image_size, image_size), interp='bilinear')
                             except (ValueError) as e:
