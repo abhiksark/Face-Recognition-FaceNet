@@ -20,6 +20,7 @@ import detect_face
 
 
 class Model():
+    @staticmethod
     def get_model_filenames(model_dir):
         files = os.listdir(model_dir)
         meta_files = [s for s in files if s.endswith('.meta')]
@@ -41,6 +42,7 @@ class Model():
                     ckpt_file = step_str.groups()[0]
         return meta_file, ckpt_file
 
+    @staticmethod
     def load_model(model):
         # Check if the model is a model directory (containing a metagraph and a checkpoint file)
         #  or if it is a protobuf file with a frozen graph

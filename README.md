@@ -60,6 +60,11 @@ Install the dependencies first for running the code.
 │   └── folder cointaining name of that person
 ├── raw_faces
 │   └── Add your group photos here
+├── face_recognition
+│   ├── __init__.py
+│   ├── detect_face.py
+│   ├── model_management.py
+│   └── facenet.py
 ├── raw_faces_to_aligned_faces.py
 ├── making_classifier.py
 ├── ModelManagement.py

@@ -31,8 +31,8 @@ from sklearn.externals import joblib
 from sklearn.svm import SVC
 from tensorflow.python.platform import gfile
 
-import detect_face
-import facenet
+import face_recognition.detect_face as detect_face
+import face_recognition.facenet as facenet
 
 
 def get_model_filenames(model_dir):
