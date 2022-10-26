@@ -42,7 +42,7 @@ def layer(op):
         name = kwargs.setdefault('name', self.get_unique_name(op.__name__))
         # Figure out the layer inputs.
         if len(self.terminals) == 0:
-            raise RuntimeError('No input variables found for layer %s.' % name)
+            raise RuntimeError(f'No input variables found for layer {name}.')
         elif len(self.terminals) == 1:
             layer_input = self.terminals[0]
         else:
@@ -98,14 +98,14 @@ class Network(object):
         '''Set the input(s) for the next operation by replacing the terminal nodes.
         The arguments can be either layer names or the actual layers.
         '''
-        assert len(args) != 0
+        assert args
         self.terminals = []
         for fed_layer in args:
             if isinstance(fed_layer, string_types):
                 try:
                     fed_layer = self.layers[fed_layer]
                 except KeyError:
-                    raise KeyError('Unknown layer name fed: %s' % fed_layer)
+                    raise KeyError(f'Unknown layer name fed: {fed_layer}')
             self.terminals.append(fed_layer)
         return self
 
@@ -195,8 +195,7 @@ class Network(object):
             weights = self.make_var('weights', shape=[dim, num_out])
             biases = self.make_var('biases', [num_out])
             op = tf.nn.relu_layer if relu else tf.nn.xw_plus_b
-            fc = op(feed_in, weights, biases, name=name)
-            return fc
+            return op(feed_in, weights, biases, name=name)
 
 
     """
@@ -210,8 +209,7 @@ class Network(object):
         max_axis = tf.reduce_max(target, axis, keep_dims=True)
         target_exp = tf.exp(target-max_axis)
         normalize = tf.reduce_sum(target_exp, axis, keep_dims=True)
-        softmax = tf.div(target_exp, normalize, name)
-        return softmax
+        return tf.div(target_exp, normalize, name)
     
 class PNet(Network):
     def setup(self):
@@ -328,9 +326,9 @@ def detect_face(img, minsize, pnet, rnet, onet, threshold, factor):
         out = pnet(img_y)
         out0 = np.transpose(out[0], (0,2,1,3))
         out1 = np.transpose(out[1], (0,2,1,3))
-        
+
         boxes, _ = generateBoundingBox(out1[0,:,:,1].copy(), out0[0,:,:,:].copy(), scale, threshold[0])
-        
+
         # inter-scale nms
         pick = nms(boxes.copy(), 0.5, 'Union')
         if boxes.size>0 and pick.size>0:
@@ -356,7 +354,7 @@ def detect_face(img, minsize, pnet, rnet, onet, threshold, factor):
     if numbox>0:
         # second stage
         tempimg = np.zeros((24,24,3,numbox))
-        for k in range(0,numbox):
+        for k in range(numbox):
             tmp = np.zeros((int(tmph[k]),int(tmpw[k]),3))
             tmp[dy[k]-1:edy[k],dx[k]-1:edx[k],:] = img[y[k]-1:ey[k],x[k]-1:ex[k],:]
             if tmp.shape[0]>0 and tmp.shape[1]>0 or tmp.shape[0]==0 and tmp.shape[1]==0:
@@ -384,7 +382,7 @@ def detect_face(img, minsize, pnet, rnet, onet, threshold, factor):
         total_boxes = np.fix(total_boxes).astype(np.int32)
         dy, edy, dx, edx, y, ey, x, ex, tmpw, tmph = pad(total_boxes.copy(), w, h)
         tempimg = np.zeros((48,48,3,numbox))
-        for k in range(0,numbox):
+        for k in range(numbox):
             tmp = np.zeros((int(tmph[k]),int(tmpw[k]),3))
             tmp[dy[k]-1:edy[k],dx[k]-1:edx[k],:] = img[y[k]-1:ey[k],x[k]-1:ex[k],:]
             if tmp.shape[0]>0 and tmp.shape[1]>0 or tmp.shape[0]==0 and tmp.shape[1]==0:
@@ -413,7 +411,7 @@ def detect_face(img, minsize, pnet, rnet, onet, threshold, factor):
             pick = nms(total_boxes.copy(), 0.7, 'Min')
             total_boxes = total_boxes[pick,:]
             points = points[:,pick]
-                
+
     return total_boxes, points
 
 
