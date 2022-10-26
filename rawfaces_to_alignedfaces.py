@@ -9,6 +9,7 @@
 ###################################################################
 """
 
+
 from __future__ import absolute_import, division, print_function
 
 import argparse
@@ -62,14 +63,14 @@ with open(bounding_boxes_filename, "w") as text_file:
         for image_path in cls.image_paths:
             nrof_images_total += 1
             filename = os.path.splitext(os.path.split(image_path)[1])[0]
-            output_filename = os.path.join(output_class_dir, filename + '.jpg')
+            output_filename = os.path.join(output_class_dir, f'{filename}.jpg')
             print(image_path)
             if not os.path.exists(output_filename):
                 try:
                     img = misc.imread(image_path)
                     print('read data dimension: ', img.ndim)
                 except (IOError, ValueError, IndexError) as e:
-                    errorMessage = '{}: {}'.format(image_path, e)
+                    errorMessage = f'{image_path}: {e}'
                     print(errorMessage)
                 else:
                     if img.ndim < 2:
@@ -92,9 +93,9 @@ with open(bounding_boxes_filename, "w") as text_file:
                     print(bounding_boxes.shape)
                     counter = nrof_faces
                     det = bounding_boxes[:, 0:4]
-                    img_size = np.asarray(img.shape)[0:2]
+                    img_size = np.asarray(img.shape)[:2]
 
-                    if nrof_faces == 1:
+                    if counter == 1:
                         det = np.squeeze(det)
                         bb_temp = np.zeros(4, dtype=np.int32)
                         bb_temp[0] = det[0]
@@ -113,7 +114,7 @@ with open(bounding_boxes_filename, "w") as text_file:
                         text_file.write('%s %d %d %d %d\n' % (
                             output_filename, bb_temp[0], bb_temp[1], bb_temp[2], bb_temp[3]))
 
-                    if nrof_faces > 1:
+                    if counter > 1:
                         bounding_box_size = (
                             det[:, 2] - det[:, 0]) * (det[:, 3] - det[:, 1])
                         img_center = img_size / 2
@@ -125,7 +126,7 @@ with open(bounding_boxes_filename, "w") as text_file:
                             bounding_box_size - offset_dist_squared * 2.0)
                         #det = det[index, :]
                         det_morethanone = det
-                        for i in range(nrof_faces):
+                        for i in range(counter):
                             det = det_morethanone[int(i), :]
                             det = np.squeeze(det)
                             bb_temp = np.zeros(4, dtype=np.int32)

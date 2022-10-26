@@ -70,8 +70,7 @@ def decov_loss(xs):
     corr = tf.reduce_mean(tf.matmul(z, tf.transpose(z, perm=[0,2,1])), 0)
     corr_frob_sqr = tf.reduce_sum(tf.square(corr))
     corr_diag_sqr = tf.reduce_sum(tf.square(tf.diag_part(corr)))
-    loss = 0.5*(corr_frob_sqr - corr_diag_sqr)
-    return loss 
+    return 0.5*(corr_frob_sqr - corr_diag_sqr) 
   
 def center_loss(features, label, alfa, nrof_classes):
     """Center loss based on the paper "A Discriminative Feature Learning Approach for Deep Face Recognition"
@@ -119,10 +118,10 @@ def random_rotate_image(image):
   
 def read_and_augment_data(image_list, label_list, image_size, batch_size, max_nrof_epochs, 
         random_crop, random_flip, random_rotate, nrof_preprocess_threads, shuffle=True):
-    
+
     images = ops.convert_to_tensor(image_list, dtype=tf.string)
     labels = ops.convert_to_tensor(label_list, dtype=tf.int32)
-    
+
     # Makes an input queue
     input_queue = tf.train.slice_input_producer([images, labels],
         num_epochs=max_nrof_epochs, shuffle=shuffle)
@@ -147,7 +146,7 @@ def read_and_augment_data(image_list, label_list, image_size, batch_size, max_nr
         images_and_labels, batch_size=batch_size,
         capacity=4 * nrof_preprocess_threads * batch_size,
         allow_smaller_final_batch=True)
-  
+
     return image_batch, label_batch
   
 def _add_loss_summaries(total_loss):
@@ -165,15 +164,15 @@ def _add_loss_summaries(total_loss):
     loss_averages = tf.train.ExponentialMovingAverage(0.9, name='avg')
     losses = tf.get_collection('losses')
     loss_averages_op = loss_averages.apply(losses + [total_loss])
-  
+
     # Attach a scalar summmary to all individual losses and the total loss; do the
     # same for the averaged version of the losses.
     for l in losses + [total_loss]:
         # Name each loss as '(raw)' and name the moving average version of the loss
         # as the original loss name.
-        tf.summary.scalar(l.op.name +' (raw)', l)
+        tf.summary.scalar(f'{l.op.name} (raw)', l)
         tf.summary.scalar(l.op.name, loss_averages.average(l))
-  
+
     return loss_averages_op
 
 def train(total_loss, global_step, optimizer, learning_rate, moving_average_decay, update_gradient_vars, log_histograms=True):
@@ -194,39 +193,38 @@ def train(total_loss, global_step, optimizer, learning_rate, moving_average_deca
             opt = tf.train.MomentumOptimizer(learning_rate, 0.9, use_nesterov=True)
         else:
             raise ValueError('Invalid optimization algorithm')
-    
+
         grads = opt.compute_gradients(total_loss, update_gradient_vars)
-        
+
     # Apply gradients.
     apply_gradient_op = opt.apply_gradients(grads, global_step=global_step)
-  
+
     # Add histograms for trainable variables.
     if log_histograms:
         for var in tf.trainable_variables():
             tf.summary.histogram(var.op.name, var)
-   
+
     # Add histograms for gradients.
     if log_histograms:
         for grad, var in grads:
             if grad is not None:
-                tf.summary.histogram(var.op.name + '/gradients', grad)
-  
+                tf.summary.histogram(f'{var.op.name}/gradients', grad)
+
     # Track the moving averages of all trainable variables.
     variable_averages = tf.train.ExponentialMovingAverage(
         moving_average_decay, global_step)
     variables_averages_op = variable_averages.apply(tf.trainable_variables())
-  
+
     with tf.control_dependencies([apply_gradient_op, variables_averages_op]):
         train_op = tf.no_op(name='train')
-  
+
     return train_op
 
 def prewhiten(x):
     mean = np.mean(x)
     std = np.std(x)
     std_adj = np.maximum(std, 1.0/np.sqrt(x.size))
-    y = np.multiply(np.subtract(x, mean), 1/std_adj)
-    return y  
+    return np.multiply(np.subtract(x, mean), 1/std_adj)  
 
 def crop(image, random_crop, image_size):
     if image.shape[1]>image_size:
@@ -272,10 +270,9 @@ def get_label_batch(label_data, batch_size, batch_index):
         batch = label_data[j:j+batch_size]
     else:
         x1 = label_data[j:nrof_examples]
-        x2 = label_data[0:nrof_examples-j]
+        x2 = label_data[:nrof_examples-j]
         batch = np.vstack([x1,x2])
-    batch_int = batch.astype(np.int64)
-    return batch_int
+    return batch.astype(np.int64)
 
 def get_batch(image_data, batch_size, batch_index):
     nrof_examples = np.size(image_data, 0)
@@ -286,29 +283,25 @@ def get_batch(image_data, batch_size, batch_index):
         x1 = image_data[j:nrof_examples,:,:,:]
         x2 = image_data[0:nrof_examples-j,:,:,:]
         batch = np.vstack([x1,x2])
-    batch_float = batch.astype(np.float32)
-    return batch_float
+    return batch.astype(np.float32)
 
 def get_triplet_batch(triplets, batch_index, batch_size):
     ax, px, nx = triplets
     a = get_batch(ax, int(batch_size/3), batch_index)
     p = get_batch(px, int(batch_size/3), batch_index)
     n = get_batch(nx, int(batch_size/3), batch_index)
-    batch = np.vstack([a, p, n])
-    return batch
+    return np.vstack([a, p, n])
 
 def get_learning_rate_from_file(filename, epoch):
     with open(filename, 'r') as f:
-        for line in f.readlines():
-            line = line.split('#', 1)[0]
-            if line:
+        for line in f:
+            if line := line.split('#', 1)[0]:
                 par = line.strip().split(':')
                 e = int(par[0])
-                lr = float(par[1])
-                if e <= epoch:
-                    learning_rate = lr
-                else:
+                if e > epoch:
                     return learning_rate
+                lr = float(par[1])
+                learning_rate = lr
 
 class ImageClass():
     "Stores the paths to images for a given class"
@@ -317,7 +310,7 @@ class ImageClass():
         self.image_paths = image_paths
   
     def __str__(self):
-        return self.name + ', ' + str(len(self.image_paths)) + ' images'
+        return f'{self.name}, {len(self.image_paths)} images'
   
     def __len__(self):
         return len(self.image_paths)
@@ -350,7 +343,7 @@ def split_dataset(dataset, split_ratio, mode):
         class_indices = np.arange(nrof_classes)
         np.random.shuffle(class_indices)
         split = int(round(nrof_classes*split_ratio))
-        train_set = [dataset[i] for i in class_indices[0:split]]
+        train_set = [dataset[i] for i in class_indices[:split]]
         test_set = [dataset[i] for i in class_indices[split:-1]]
     elif mode=='SPLIT_IMAGES':
         train_set = []
@@ -362,7 +355,7 @@ def split_dataset(dataset, split_ratio, mode):
             split = int(round(len(paths)*split_ratio))
             if split<min_nrof_images:
                 continue  # Not enough images for test set. Skip class...
-            train_set.append(ImageClass(cls.name, paths[0:split]))
+            train_set.append(ImageClass(cls.name, paths[:split]))
             test_set.append(ImageClass(cls.name, paths[split:-1]))
     else:
         raise ValueError('Invalid train/test split mode "%s"' % mode)
@@ -373,28 +366,31 @@ def load_model(model):
     #  or if it is a protobuf file with a frozen graph
     model_exp = os.path.expanduser(model)
     if (os.path.isfile(model_exp)):
-        print('Model filename: %s' % model_exp)
+        print(f'Model filename: {model_exp}')
         with gfile.FastGFile(model_exp,'rb') as f:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
             tf.import_graph_def(graph_def, name='')
     else:
-        print('Model directory: %s' % model_exp)
+        print(f'Model directory: {model_exp}')
         meta_file, ckpt_file = get_model_filenames(model_exp)
-        
-        print('Metagraph file: %s' % meta_file)
-        print('Checkpoint file: %s' % ckpt_file)
-      
+
+        print(f'Metagraph file: {meta_file}')
+        print(f'Checkpoint file: {ckpt_file}')
+
         saver = tf.train.import_meta_graph(os.path.join(model_exp, meta_file))
         saver.restore(tf.get_default_session(), os.path.join(model_exp, ckpt_file))
     
 def get_model_filenames(model_dir):
     files = os.listdir(model_dir)
     meta_files = [s for s in files if s.endswith('.meta')]
-    if len(meta_files)==0:
-        raise ValueError('No meta file found in the model directory (%s)' % model_dir)
+    if not meta_files:
+        raise ValueError(f'No meta file found in the model directory ({model_dir})')
     elif len(meta_files)>1:
-        raise ValueError('There should not be more than one meta file in the model directory (%s)' % model_dir)
+        raise ValueError(
+            f'There should not be more than one meta file in the model directory ({model_dir})'
+        )
+
     meta_file = meta_files[0]
     meta_files = [s for s in files if '.ckpt' in s]
     max_step = -1
@@ -501,24 +497,23 @@ def store_revision_info(src_path, output_dir, arg_string):
     gitproc = Popen(['git', 'rev-parse', 'HEAD'], stdout = PIPE, cwd=src_path)
     (stdout, _) = gitproc.communicate()
     git_hash = stdout.strip()
-  
+
     # Get local changes
     gitproc = Popen(['git', 'diff', 'HEAD'], stdout = PIPE, cwd=src_path)
     (stdout, _) = gitproc.communicate()
     git_diff = stdout.strip()
-    
+
     # Store a text file in the log directory
     rev_info_filename = os.path.join(output_dir, 'revision_info.txt')
     with open(rev_info_filename, "w") as text_file:
         text_file.write('arguments: %s\n--------------------\n' % arg_string)
         text_file.write('git hash: %s\n--------------------\n' % git_hash)
-        text_file.write('%s' % git_diff)
+        text_file.write(f'{git_diff}')
 
 def list_variables(filename):
     reader = training.NewCheckpointReader(filename)
     variable_map = reader.get_variable_to_shape_map()
-    names = sorted(variable_map.keys())
-    return names
+    return sorted(variable_map.keys())
 
 def put_images_on_grid(images, shape=(16,8)):
     nrof_images = images.shape[0]

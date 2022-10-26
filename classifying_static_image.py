@@ -9,6 +9,7 @@
 ###################################################################
 """
 
+
 from __future__ import absolute_import, division, print_function
 
 import argparse
@@ -64,7 +65,7 @@ with tf.Graph().as_default():
         classifier_filename_exp = os.path.expanduser(classifier_filename)
         with open(classifier_filename_exp, 'rb') as infile:
             (model, class_names) = pickle.load(infile)
-            print('load classifier file-> %s' % classifier_filename_exp)
+            print(f'load classifier file-> {classifier_filename_exp}')
         video_capture = cv2.VideoCapture(0)
         c = 0
 
@@ -77,11 +78,12 @@ with tf.Graph().as_default():
 
         print('Start Recognition!')
         prevTime = 0
+        timeF = frame_interval
+        text_fps_y = 20
         while True:
             ret, frame = video_capture.read()
             # frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
             curTime = time.time()    # calc fps
-            timeF = frame_interval
             if (c % timeF == 0):
                 find_results = []
                 if frame.ndim == 2:
@@ -94,7 +96,7 @@ with tf.Graph().as_default():
                 print('Detected_FaceNum: %d' % nrof_faces)
                 if nrof_faces > 0:
                     det = bounding_boxes[:, 0:4]
-                    img_size = np.asarray(frame.shape)[0:2]
+                    img_size = np.asarray(frame.shape)[:2]
                     cropped = []
                     scaled = []
                     scaled_reshape = []
@@ -147,7 +149,6 @@ with tf.Graph().as_default():
             fps = 1 / (sec)
             str = 'FPS: %2.3f' % fps
             text_fps_x = len(frame[0]) - 150
-            text_fps_y = 20
             cv2.putText(frame, str, (text_fps_x, text_fps_y),
                         cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=2)
             # c+=1

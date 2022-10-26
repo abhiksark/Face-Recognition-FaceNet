@@ -10,6 +10,7 @@
 """
 
 
+
 from __future__ import absolute_import, division, print_function
 
 import argparse
@@ -64,10 +65,7 @@ with tf.Graph().as_default():
             emb_array[start_index:end_index, :] = sess.run(
                 embeddings, feed_dict=feed_dict)
 
-names = []
-for i in range(1, 129):
-    names.append("col"+str(i))
-
+names = [f"col{str(i)}" for i in range(1, 129)]
 value = emb_array
 key = paths
 d = dict(zip(key, value))
@@ -80,12 +78,12 @@ kmeans = KMeans(n_clusters=10, init='k-means++', random_state=42)
 y_kmeans = kmeans.fit_predict(X)
 
 for i in range(len(paths)):
-    print(str(y_kmeans[i]) + "/" + str(y[i].split("/")[-1]))
+    print(f"{str(y_kmeans[i])}/" + str(y[i].split("/")[-1]))
     try:
         os.rename(y[i], "./faces/group_photos/" +
                   str(y_kmeans[i]) + "/" + str(y[i].split("/")[-1]))
     except:
-        os.mkdir("./faces/group_photos/" + str(y_kmeans[i]))
+        os.mkdir(f"./faces/group_photos/{str(y_kmeans[i])}")
         print()
         os.rename(y[i], "./faces/group_photos/" +
                   str(y_kmeans[i]) + "/" + str(y[i].split("/")[-1]))

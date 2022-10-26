@@ -38,12 +38,13 @@ import face_recognition.facenet as facenet
 def get_model_filenames(model_dir):
     files = os.listdir(model_dir)
     meta_files = [s for s in files if s.endswith('.meta')]
-    if len(meta_files) == 0:
-        raise ValueError(
-            'No meta file found in the model directory (%s)' % model_dir)
+    if not meta_files:
+        raise ValueError(f'No meta file found in the model directory ({model_dir})')
     elif len(meta_files) > 1:
         raise ValueError(
-            'There should not be more than one meta file in the model directory (%s)' % model_dir)
+            f'There should not be more than one meta file in the model directory ({model_dir})'
+        )
+
     meta_file = meta_files[0]
     meta_files = [s for s in files if '.ckpt' in s]
     max_step = -1
@@ -62,17 +63,17 @@ def load_model(model):
     #  or if it is a protobuf file with a frozen graph
     model_exp = os.path.expanduser(model)
     if (os.path.isfile(model_exp)):
-        print('Model filename: %s' % model_exp)
+        print(f'Model filename: {model_exp}')
         with gfile.FastGFile(model_exp, 'rb') as f:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
             tf.import_graph_def(graph_def, name='')
     else:
-        print('Model directory: %s' % model_exp)
+        print(f'Model directory: {model_exp}')
         meta_file, ckpt_file = get_model_filenames(model_exp)
 
-        print('Metagraph file: %s' % meta_file)
-        print('Checkpoint file: %s' % ckpt_file)
+        print(f'Metagraph file: {meta_file}')
+        print(f'Checkpoint file: {ckpt_file}')
 
         saver = tf.train.import_meta_graph(os.path.join(model_exp, meta_file))
         saver.restore(tf.get_default_session(),
@@ -116,7 +117,7 @@ with tf.Graph().as_default():
         classifier_filename_exp = os.path.expanduser(classifier_filename)
         with open(classifier_filename_exp, 'rb') as infile:
             (model, class_names) = pickle.load(infile)
-            print('load classifier file-> %s' % classifier_filename_exp)
+            print(f'load classifier file-> {classifier_filename_exp}')
         c = 0
 
         ret = True
@@ -134,9 +135,7 @@ with tf.Graph().as_default():
         if nrof_faces > 0:
             for i in range(nrof_faces):
                 det = det_morethanone[int(i), :]
-                img_size = np.asarray(frame.shape)[0:2]
-                cropped = []
-                scaled = []
+                img_size = np.asarray(frame.shape)[:2]
                 scaled_reshape = []
                 bb = np.zeros((nrof_faces, 4), dtype=np.int32)
                 emb_array = np.zeros((1, embedding_size))
@@ -151,10 +150,14 @@ with tf.Graph().as_default():
                     print('face is inner of range!')
                     continue
 
-                cropped.append(frame[bb[i][1]:bb[i][3], bb[i][0]:bb[i][2], :])
+                cropped = [frame[bb[i][1]:bb[i][3], bb[i][0]:bb[i][2], :]]
                 cropped[0] = facenet.flip(cropped[0], False)
-                scaled.append(misc.imresize(
-                    cropped[0], (image_size, image_size), interp='bilinear'))
+                scaled = [
+                    misc.imresize(
+                        cropped[0], (image_size, image_size), interp='bilinear'
+                    )
+                ]
+
                 scaled[0] = cv2.resize(scaled[0], (input_image_size, input_image_size),
                                        interpolation=cv2.INTER_CUBIC)
                 scaled[0] = facenet.prewhiten(scaled[0])
@@ -180,7 +183,7 @@ with tf.Graph().as_default():
                         cv2.putText(frame, result_names, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
                                     1, (255, 255, 0), thickness=2, lineType=8)
 
-            cv2.imwrite('./'+str("prediction")+".jpg", frame)
+            cv2.imwrite('./' + "prediction" + ".jpg", frame)
 
         else:
             print('Unable to align')
